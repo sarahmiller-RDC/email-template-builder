@@ -54,6 +54,9 @@ export function EmailPreview({
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
+    const height = emailRef.current.scrollHeight;
+    const width = emailRef.current.scrollWidth;
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -63,7 +66,10 @@ export function EmailPreview({
           <style>
             * { box-sizing: border-box; }
             body { margin: 0; padding: 0; background: ${isDark ? '#1a1816' : '#ffffff'}; }
-            @media print { body { margin: 0; } }
+            @media print {
+              body { margin: 0; }
+              @page { size: ${width}px ${height}px; margin: 0; }
+            }
           </style>
         </head>
         <body>

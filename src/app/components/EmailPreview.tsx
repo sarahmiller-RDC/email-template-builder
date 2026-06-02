@@ -54,7 +54,7 @@ export function EmailPreview({
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
-    const height = emailRef.current.scrollHeight;
+    const height = emailRef.current.scrollHeight + 60;
     const width = emailRef.current.scrollWidth;
 
     printWindow.document.write(`

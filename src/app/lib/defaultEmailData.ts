@@ -22,29 +22,11 @@ export const defaultEmailData: EmailData = {
       },
       {
         itemType: 'content',
-        id: 'agent-name',
-        data: {
-          id: 'agent-name',
-          type: 'bodyText',
-          content: '[Agent name],',
-        },
-      },
-      {
-        itemType: 'content',
         id: 'opening-body',
         data: {
           id: 'opening-body',
           type: 'bodyText',
-          content: 'Congratulations! [Owner name] has invited you to join RealPro Select Seller Leads, your solution for high-intent, exclusive seller leads. Follow the steps below to accept your invitation and get started:',
-        },
-      },
-      {
-        itemType: 'content',
-        id: 'welcome-text',
-        data: {
-          id: 'welcome-text',
-          type: 'bodyText',
-          content: 'Welcome to a new era of success!',
+          content: '[Agent name],<br><br>Congratulations! [Owner name] has invited you to join RealPro Select Seller Leads, your solution for high-intent, exclusive seller leads. Follow the steps below to accept your invitation and get started:<br><br>Welcome to a new era of success!',
         },
       },
       {

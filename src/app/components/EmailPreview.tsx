@@ -54,7 +54,7 @@ export function EmailPreview({
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
-    const height = emailRef.current.scrollHeight + 60;
+    const height = emailRef.current.scrollHeight;
     const width = emailRef.current.scrollWidth;
 
     printWindow.document.write(`
@@ -65,9 +65,9 @@ export function EmailPreview({
           <style>${styles}</style>
           <style>
             * { box-sizing: border-box; }
-            body { margin: 0; padding: 0; background: ${isDark ? '#1a1816' : '#ffffff'}; }
+            body { margin: 0; padding: 0 0 80px 0; background: ${isDark ? '#1a1816' : '#ffffff'}; }
             @media print {
-              body { margin: 0; }
+              body { margin: 0; padding: 0 0 80px 0; }
               @page { size: ${width}px ${height}px; margin: 0; }
               * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             }

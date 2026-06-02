@@ -69,6 +69,7 @@ export function EmailPreview({
             @media print {
               body { margin: 0; }
               @page { size: ${width}px ${height}px; margin: 0; }
+              * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             }
           </style>
         </head>

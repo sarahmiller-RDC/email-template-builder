@@ -8,7 +8,6 @@ import { EmailContentBlock } from './email/EmailContentBlock';
 import { Monitor, Tablet, Smartphone, Sun, Moon, Download } from 'lucide-react';
 import { Button } from './ui/button';
 import { useRef } from 'react';
-import html2canvas from 'html2canvas';
 
 interface EmailPreviewProps {
   emailData: EmailData;
@@ -37,19 +36,45 @@ export function EmailPreview({
 
   const isDark = themeMode === 'dark';
 
-  const downloadPNG = async () => {
+  const exportPDF = () => {
     if (!emailRef.current) return;
-    
-    const canvas = await html2canvas(emailRef.current, {
-      scale: 2,
-      backgroundColor: isDark ? '#1a1816' : '#ffffff',
-      logging: true,
-    });
-    
-    const link = document.createElement('a');
-    link.download = 'email.png';
-    link.href = canvas.toDataURL();
-    link.click();
+
+    const emailHTML = emailRef.current.outerHTML;
+
+    const styles = Array.from(document.styleSheets)
+      .map(sheet => {
+        try {
+          return Array.from(sheet.cssRules).map(rule => rule.cssText).join('\n');
+        } catch {
+          return '';
+        }
+      })
+      .join('\n');
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Email Export</title>
+          <style>${styles}</style>
+          <style>
+            * { box-sizing: border-box; }
+            body { margin: 0; padding: 0; background: ${isDark ? '#1a1816' : '#ffffff'}; }
+            @media print { body { margin: 0; } }
+          </style>
+        </head>
+        <body>
+          ${emailHTML}
+          <script>
+            window.onload = () => { window.print(); window.onafterprint = () => window.close(); }
+          <\/script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   return (
@@ -106,10 +131,10 @@ export function EmailPreview({
           </Button>
           <Button
             size="sm"
-            onClick={downloadPNG}
+            onClick={exportPDF}
           >
             <Download className="size-4 mr-2" />
-            Download
+            Export PDF
           </Button>
         </div>
       </div>

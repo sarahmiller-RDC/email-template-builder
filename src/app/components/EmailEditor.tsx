@@ -1347,7 +1347,7 @@ export function EmailEditor({ emailData, onEmailDataChange }: EmailEditorProps) 
                           </div>
                         </CardHeader>
                         <CollapsibleContent>
-                          <CardContent className="space-y-4 pt-4">
+                          <CardContent className="space-y-2 pt-2 pb-2">
                             {/* Standard Panel - Fully customizable elements */}
                             {item.data.type === 'standard' && (
                               <div className="space-y-2">

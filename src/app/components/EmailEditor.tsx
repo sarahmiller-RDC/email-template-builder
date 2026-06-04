@@ -6,7 +6,7 @@ import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Plus, Trash2, Type, AlignLeft, Bold as BoldIcon, MousePointerClick, Italic, Underline, ChevronDown, Pencil, Minus, List, ListOrdered, Image as ImageIcon, Upload, Save, FolderOpen } from 'lucide-react';
+import { Plus, Trash2, Type, AlignLeft, Bold as BoldIcon, MousePointerClick, Italic, Underline, ChevronDown, Pencil, Minus, List, ListOrdered, Image as ImageIcon, Upload } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Separator } from './ui/separator';
 import { Switch } from './ui/switch';
@@ -971,45 +971,10 @@ export function EmailEditor({ emailData, onEmailDataChange, showInformation, onS
     </div>
   );
 
-  const saveJSON = () => {
-    const blob = new Blob([JSON.stringify(emailData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${emailData.information.emailName || 'email'}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const loadJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target?.result as string);
-        onEmailDataChange(data);
-      } catch {
-        alert('Invalid file — please upload a valid email JSON file.');
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  };
-
   return (
     <div className="h-full overflow-auto p-4 bg-[#F0F0F0]">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4">
         <h2 className="text-[24px] mb-1">Email editor</h2>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={saveJSON} className="gap-1.5 text-[13px]">
-            <Save className="size-3.5" /> Save
-          </Button>
-          <Button size="sm" variant="outline" className="gap-1.5 text-[13px]" onClick={() => document.getElementById('load-json-input')?.click()}>
-            <FolderOpen className="size-3.5" /> Load
-          </Button>
-          <input id="load-json-input" type="file" accept=".json" className="hidden" onChange={loadJSON} />
-        </div>
       </div>
 
       <Tabs defaultValue="body" className="w-full">

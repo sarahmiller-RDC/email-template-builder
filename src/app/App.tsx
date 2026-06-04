@@ -36,6 +36,7 @@ export default function App() {
           </div>
           <EmailPreview
             emailData={emailData}
+            onEmailDataChange={setEmailData}
             viewportMode={viewportMode}
             themeMode={themeMode}
             onViewportChange={setViewportMode}

@@ -5,12 +5,14 @@ import { EmailHelpSection } from './email/EmailHelpSection';
 import { EmailSignature } from './email/EmailSignature';
 import { EmailFooter, LogoHeader } from './email/EmailFooter';
 import { EmailContentBlock } from './email/EmailContentBlock';
-import { Monitor, Tablet, Smartphone, Sun, Moon, Download } from 'lucide-react';
+import { Monitor, Tablet, Smartphone, Sun, Moon, ChevronDown, FileDown, FileUp, FileJson } from 'lucide-react';
 import { Button } from './ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useRef } from 'react';
 
 interface EmailPreviewProps {
   emailData: EmailData;
+  onEmailDataChange: (data: EmailData) => void;
   viewportMode: ViewportMode;
   themeMode: ThemeMode;
   onViewportChange: (mode: ViewportMode) => void;
@@ -20,6 +22,7 @@ interface EmailPreviewProps {
 
 export function EmailPreview({
   emailData,
+  onEmailDataChange,
   viewportMode,
   themeMode,
   onViewportChange,
@@ -35,6 +38,32 @@ export function EmailPreview({
   };
 
   const isDark = themeMode === 'dark';
+
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify(emailData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${emailData.information.emailName || 'email'}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        onEmailDataChange(data);
+      } catch {
+        alert('Invalid file — please upload a valid email JSON file.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
 
   const exportPDF = () => {
     if (!emailRef.current) return;
@@ -137,13 +166,28 @@ export function EmailPreview({
             <Moon className="size-4 mr-2" />
             Dark
           </Button>
-          <Button
-            size="sm"
-            onClick={exportPDF}
-          >
-            <Download className="size-4 mr-2" />
-            Export PDF
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm">
+                Import / Export <ChevronDown className="size-3.5 ml-1.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Export</DropdownMenuLabel>
+              <DropdownMenuItem onClick={exportPDF}>
+                <FileDown className="size-4 mr-2" /> Export as PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportJSON}>
+                <FileJson className="size-4 mr-2" /> Export as JSON
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Import</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => document.getElementById('import-json-input')?.click()}>
+                <FileUp className="size-4 mr-2" /> Import JSON
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <input id="import-json-input" type="file" accept=".json" className="hidden" onChange={importJSON} />
         </div>
       </div>
 

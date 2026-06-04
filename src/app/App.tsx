@@ -19,7 +19,7 @@ export default function App() {
       <div className="flex h-screen overflow-hidden bg-gray-50">
         {/* Left Panel - Editor */}
         <div className="w-[550px] flex-shrink-0 border-r-2 border-gray-300">
-          <EmailEditor emailData={emailData} onEmailDataChange={setEmailData} />
+          <EmailEditor emailData={emailData} onEmailDataChange={setEmailData} showInformation={showInformation} onShowInformationChange={setShowInformation} />
         </div>
 
         {/* Right Panel - Preview */}
@@ -31,7 +31,7 @@ export default function App() {
                 checked={showInformation}
                 onCheckedChange={setShowInformation}
               />
-              <Label htmlFor="show-info">Show Information Section</Label>
+              <Label htmlFor="show-info">Show Details Section</Label>
             </div>
           </div>
           <EmailPreview

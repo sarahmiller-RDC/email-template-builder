@@ -6,7 +6,7 @@ import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Plus, Trash2, Type, AlignLeft, Bold as BoldIcon, MousePointerClick, Italic, Underline, ChevronDown, Pencil, Minus, List, ListOrdered, Image as ImageIcon, Upload } from 'lucide-react';
+import { Plus, Trash2, Type, AlignLeft, Bold as BoldIcon, MousePointerClick, Italic, Underline, ChevronDown, Pencil, Minus, List, ListOrdered, Image as ImageIcon, Upload, Save, FolderOpen } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Separator } from './ui/separator';
 import { Switch } from './ui/switch';
@@ -28,6 +28,8 @@ import { RichTextInput } from './RichTextInput';
 interface EmailEditorProps {
   emailData: EmailData;
   onEmailDataChange: (data: EmailData) => void;
+  showInformation: boolean;
+  onShowInformationChange: (value: boolean) => void;
 }
 
 const elementTypeLabels: Record<ContentElementType, string> = {
@@ -54,7 +56,7 @@ const elementTypeIcons: Record<ContentElementType, any> = {
   image: ImageIcon,
 };
 
-export function EmailEditor({ emailData, onEmailDataChange }: EmailEditorProps) {
+export function EmailEditor({ emailData, onEmailDataChange, showInformation, onShowInformationChange }: EmailEditorProps) {
   const [activeTab, setActiveTab] = useState<'information' | 'body' | 'footer'>('body');
   const [openPanels, setOpenPanels] = useState<Record<string, boolean>>({});
   const [editingDisclaimer, setEditingDisclaimer] = useState(false);
@@ -969,15 +971,50 @@ export function EmailEditor({ emailData, onEmailDataChange }: EmailEditorProps) 
     </div>
   );
 
+  const saveJSON = () => {
+    const blob = new Blob([JSON.stringify(emailData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${emailData.information.emailName || 'email'}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const loadJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        onEmailDataChange(data);
+      } catch {
+        alert('Invalid file — please upload a valid email JSON file.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   return (
     <div className="h-full overflow-auto p-4 bg-[#F0F0F0]">
-      <div className="mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <h2 className="text-[24px] mb-1">Email editor</h2>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={saveJSON} className="gap-1.5 text-[13px]">
+            <Save className="size-3.5" /> Save
+          </Button>
+          <Button size="sm" variant="outline" className="gap-1.5 text-[13px]" onClick={() => document.getElementById('load-json-input')?.click()}>
+            <FolderOpen className="size-3.5" /> Load
+          </Button>
+          <input id="load-json-input" type="file" accept=".json" className="hidden" onChange={loadJSON} />
+        </div>
       </div>
 
       <Tabs defaultValue="body" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="information">Information</TabsTrigger>
+          <TabsTrigger value="information">Details</TabsTrigger>
           <TabsTrigger value="body">Email Body</TabsTrigger>
           <TabsTrigger value="footer">Footer</TabsTrigger>
         </TabsList>
@@ -990,11 +1027,11 @@ export function EmailEditor({ emailData, onEmailDataChange }: EmailEditorProps) 
                 <CardDescription>Email metadata and recipient details</CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                <Label htmlFor="infoVisible" className="text-[14px] text-gray-600">Preview</Label>
+                <Label htmlFor="infoVisible" className="text-[14px] text-gray-600">Show in preview</Label>
                 <Switch
                   id="infoVisible"
-                  checked={emailData.information.visible}
-                  onCheckedChange={(visible) => updateInformation('visible', visible as any)}
+                  checked={showInformation}
+                  onCheckedChange={onShowInformationChange}
                 />
               </div>
             </CardHeader>
@@ -1347,7 +1384,7 @@ export function EmailEditor({ emailData, onEmailDataChange }: EmailEditorProps) 
                           </div>
                         </CardHeader>
                         <CollapsibleContent>
-                          <CardContent className="space-y-2 pt-2 pb-2">
+                          <CardContent className="space-y-2 pt-2 pb-2 px-2">
                             {/* Standard Panel - Fully customizable elements */}
                             {item.data.type === 'standard' && (
                               <div className="space-y-2">

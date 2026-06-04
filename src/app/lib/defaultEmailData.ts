@@ -3,11 +3,11 @@ import { EmailData } from '../types/email';
 export const defaultEmailData: EmailData = {
   information: {
     visible: true,
-    emailName: 'Email Name/Type',
-    subject: 'Subject Line',
-    fromAddress: 'From Address',
-    replyToAddress: 'Reply-to address',
-    toAddress: 'To Address',
+    emailName: '',
+    subject: '',
+    fromAddress: '',
+    replyToAddress: '',
+    toAddress: '',
   },
   body: {
     bodyItems: [
